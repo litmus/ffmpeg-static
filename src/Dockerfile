@@ -86,8 +86,8 @@ RUN cd /tmp/ffmpeg_sources \
 
 FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS final
 
-COPY --from=build /tmp/bin/ffmpeg /tmp/bin/ffmpeg
-COPY --from=build /tmp/bin/ffprobe /tmp/bin/ffprobe
+COPY --from=build /tmp/bin/ffmpeg /bin/ffmpeg
+COPY --from=build /tmp/bin/ffprobe /bin/ffprobe
 
 ## Run a validation test
 FROM final AS test
@@ -96,7 +96,7 @@ RUN mkdir /tmp/test \
     && cd /tmp/test \
     && curl -O -L  https://www3.cde.ca.gov/download/rod/big_buck_bunny.mp4
 
-RUN /tmp/bin/ffmpeg -i /tmp/test/big_buck_bunny.mp4 -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/output_%03d.png
+RUN /bin/ffmpeg -i /tmp/test/big_buck_bunny.mp4 -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/output_%03d.png
 
 # publish final
 FROM final
