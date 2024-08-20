@@ -92,11 +92,23 @@ COPY --from=build /tmp/bin/ffprobe /bin/ffprobe
 ## Run a validation test
 FROM final AS test
 
-RUN mkdir /tmp/test \
-    && cd /tmp/test \
-    && curl -O -L  https://www3.cde.ca.gov/download/rod/big_buck_bunny.mp4
+RUN mkdir /tmp/test
 
-RUN /bin/ffmpeg -i /tmp/test/big_buck_bunny.mp4 -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/output_%03d.png
+# Codec: H264 - MPEG-4 AVC (part 10) (avc1)
+RUN curl https://www3.cde.ca.gov/download/rod/big_buck_bunny.mp4 -o /tmp/test/h264.mp4
+RUN /bin/ffmpeg -i /tmp/test/h264.mp4 -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/h264_%03d.png
+
+# Codec: MPEG-H Part2/HEVC (H.265) (hev1)
+RUN curl https://www.elecard.com/storage/video/TSU_854x480.mp4 -o /tmp/test/h265.mp4
+RUN /bin/ffmpeg -i /tmp/test/h264.mp4  -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/h265_%03d.png
+
+# Codec: Google/On2's VP9 Video (VP90)
+RUN curl https://www.elecard.com/storage/video/UshaikaRiverEmb_854x480.webm -o /tmp/test/VP9.webm
+RUN /bin/ffmpeg -i /tmp/test/VP9.webm -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/VP9_%03d.png
+
+# Codec: AOMedia's AV1 Video (av01)
+RUN curl https://www.elecard.com/storage/video/CityHall_854x480.webm -o /tmp/test/AV1.webm
+RUN /bin/ffmpeg -i /tmp/test/AV1.webm -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/AV1_%03d.png
 
 # publish final
 FROM final AS publish
