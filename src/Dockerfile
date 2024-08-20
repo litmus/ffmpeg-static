@@ -1,12 +1,12 @@
 FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build
 
 # FROM https://trac.ffmpeg.org/wiki/CompilationGuide/Centos
-RUN dnf install -y autoconf automake bzip2 bzip2-devel cmake gcc gcc-c++ git libtool make pkgconfig zlib-devel diffutils perl
+RUN dnf install -y autoconf automake bzip2 bzip2-devel cmake gcc gcc-c++ git libtool make pkgconfig zlib-devel diffutils perl meson ninja-build
 RUN dnf remove nasm
 RUN mkdir /tmp/ffmpeg_sources
 RUN mkdir /tmp/bin
 ENV PATH="$PATH:/tmp/bin"
-ENV PKG_CONFIG_PATH="/tmp/ffmpeg_build/lib/pkgconfig"
+ENV PKG_CONFIG_PATH="/tmp/ffmpeg_build/lib/pkgconfig:/tmp/ffmpeg_build/lib64/pkgconfig"
 
 ## NASM
 RUN cd /tmp/ffmpeg_sources \
@@ -75,12 +75,22 @@ RUN cd /tmp/ffmpeg_sources \
     && make \
     && make install
 
+## av1 support
+RUN cd /tmp/ffmpeg_sources \
+    && git clone --branch 1.4.3 --depth 1 https://code.videolan.org/videolan/dav1d.git \
+    && cd dav1d \
+    && mkdir build \
+    && cd build \
+    && meson --default-library=static --prefix="/tmp/ffmpeg_build" --bindir="/tmp/bin" .. \
+    && ninja \
+    && ninja install
+
 ## ffmpeg
 RUN cd /tmp/ffmpeg_sources \
     && curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 \
     && tar xjvf ffmpeg-snapshot.tar.bz2 \
     && cd ffmpeg \
-    && ./configure --prefix="/tmp/ffmpeg_build" --pkg-config-flags="--static" --extra-cflags="-I/tmp/ffmpeg_build/include" --extra-ldflags="-L/tmp/ffmpeg_build/lib" --extra-libs="-lpthread -lm -lz" --bindir="/tmp/bin" --enable-gpl --enable-libfdk_aac --enable-libmp3lame --enable-libopus --enable-libvpx --enable-libx264 --enable-nonfree --enable-yasm --enable-static --disable-shared --strip="$(type -P strip)" \
+    && ./configure --prefix="/tmp/ffmpeg_build" --pkg-config-flags="--static" --extra-cflags="-I/tmp/ffmpeg_build/include" --extra-ldflags="-L/tmp/ffmpeg_build/lib" --extra-libs="-lpthread -lm -lz" --bindir="/tmp/bin" --enable-gpl --enable-libfdk_aac --enable-libmp3lame --enable-libopus --enable-libvpx --enable-libx264 --enable-libdav1d --enable-nonfree --enable-yasm --enable-static --disable-shared --strip="$(type -P strip)" \
     && make \
     && make install
 
