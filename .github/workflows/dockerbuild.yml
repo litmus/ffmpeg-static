@@ -18,3 +18,4 @@ jobs:
         with:
           context: src/
           push: false
+          target: test

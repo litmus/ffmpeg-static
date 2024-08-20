@@ -99,4 +99,4 @@ RUN mkdir /tmp/test \
 RUN /bin/ffmpeg -i /tmp/test/big_buck_bunny.mp4 -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/output_%03d.png
 
 # publish final
-FROM final
+FROM final AS publish

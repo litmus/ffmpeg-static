@@ -26,3 +26,4 @@ jobs:
           context: src/
           push: true
           tags: ghcr.io/litmus/ffmpeg-static:latest
+          target: publish
