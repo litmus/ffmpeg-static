@@ -120,5 +120,8 @@ RUN /bin/ffmpeg -i /tmp/test/VP9.webm -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt 
 RUN curl https://www.elecard.com/storage/video/CityHall_854x480.webm -o /tmp/test/AV1.webm
 RUN /bin/ffmpeg -i /tmp/test/AV1.webm -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/AV1_%03d.png
 
+ADD play-button.png /tmp/test/play-button.png
+RUN /bin/ffmpeg -i /tmp/test/AV1.webm -i /tmp/test/play-button.png -filter_complex "[0:v][1:v] overlay=(W-w)/2:(H-h)/2:enable='between(t,0,20)'[m];[m]fps=5,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 /tmp/test/overlay.gif
+
 # publish final
 FROM final AS publish
