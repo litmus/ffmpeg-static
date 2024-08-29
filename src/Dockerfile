@@ -85,12 +85,21 @@ RUN cd /tmp/ffmpeg_sources \
     && ninja \
     && ninja install
 
+## libwebp support
+RUN cd /tmp/ffmpeg_sources \
+    && curl -O -L https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.4.0.tar.gz \
+    && tar xzvf libwebp-1.4.0.tar.gz \
+    && cd libwebp-1.4.0 \
+    && ./configure --prefix="/tmp/ffmpeg_build" --enable-static --disable-shared \
+    && make \
+    && make install
+
 ## ffmpeg
 RUN cd /tmp/ffmpeg_sources \
     && curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 \
     && tar xjvf ffmpeg-snapshot.tar.bz2 \
     && cd ffmpeg \
-    && ./configure --prefix="/tmp/ffmpeg_build" --pkg-config-flags="--static" --extra-cflags="-I/tmp/ffmpeg_build/include" --extra-ldflags="-L/tmp/ffmpeg_build/lib" --extra-libs="-lpthread -lm -lz" --bindir="/tmp/bin" --enable-gpl --enable-libfdk_aac --enable-libmp3lame --enable-libopus --enable-libvpx --enable-libx264 --enable-libdav1d --enable-nonfree --enable-yasm --enable-static --disable-shared --strip="$(type -P strip)" \
+    && ./configure --prefix="/tmp/ffmpeg_build" --pkg-config-flags="--static" --extra-cflags="-I/tmp/ffmpeg_build/include" --extra-ldflags="-L/tmp/ffmpeg_build/lib" --extra-libs="-lpthread -lm -lz" --bindir="/tmp/bin" --enable-gpl --enable-libfdk_aac --enable-libmp3lame --enable-libopus --enable-libvpx --enable-libx264 --enable-libdav1d --enable-libwebp --enable-nonfree --enable-yasm --enable-static --disable-shared --strip="$(type -P strip)" \
     && make \
     && make install
 
