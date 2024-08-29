@@ -120,5 +120,9 @@ RUN /bin/ffmpeg -i /tmp/test/VP9.webm -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt 
 RUN curl https://www.elecard.com/storage/video/CityHall_854x480.webm -o /tmp/test/AV1.webm
 RUN /bin/ffmpeg -i /tmp/test/AV1.webm -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/AV1_%03d.png
 
+# Webp support
+RUN curl https://www3.cde.ca.gov/download/rod/big_buck_bunny.mp4 -o /tmp/test/to_webp.mp4
+RUN ffmpeg -i /tmp/test/to_webp.mp4 -vcodec libwebp -filter:v fps=fps=20 -lossless 1 -loop 0 -preset default -an -vsync 0 -s 800:600 /tmp/test/lossless.webp
+
 # publish final
 FROM final AS publish
