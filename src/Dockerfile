@@ -119,7 +119,7 @@ RUN /bin/ffmpeg -i /tmp/test/h264.mp4 -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt 
 
 # Codec: MPEG-H Part2/HEVC (H.265) (hev1)
 RUN curl https://www.elecard.com/storage/video/TSU_854x480.mp4 -o /tmp/test/h265.mp4
-RUN /bin/ffmpeg -i /tmp/test/h264.mp4  -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/h265_%03d.png
+RUN /bin/ffmpeg -i /tmp/test/h265.mp4  -vf fps=5 -t 10 -vcodec rawvideo -pix_fmt rgb24 /tmp/test/h265_%03d.png
 
 # Codec: Google/On2's VP9 Video (VP90)
 RUN curl https://www.elecard.com/storage/video/UshaikaRiverEmb_854x480.webm -o /tmp/test/VP9.webm
